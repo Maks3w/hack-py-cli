@@ -34,6 +34,11 @@ def step_impl(context, available_funds: Decimal):
     assert context.account.available_funds == available_funds
 
 
+@then("the account should have held funds of {held_funds:F}")
+def step_impl(context, held_funds: Decimal):
+    assert context.account.held_funds == held_funds
+
+
 @then("the account should have total funds of {total_funds:F}")
 def step_impl(context, total_funds: Decimal):
     assert context.account.total_funds == total_funds

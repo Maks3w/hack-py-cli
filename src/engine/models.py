@@ -46,13 +46,17 @@ class Account:
             raise ValueError(f'Invalid account_id: {account_id}')
 
     account_id: int
-    available_funds: Decimal
+    held_funds: Decimal
     total_funds: Decimal
+
+    @property
+    def available_funds(self) -> Decimal:
+        return self.total_funds - self.held_funds
 
     def __init__(self, account_id: int):
         Account.assert_valid_account_id(account_id)
         self.account_id = account_id
-        self.available_funds = Decimal('0.0000')
+        self.held_funds = Decimal('0.0000')
         self.total_funds = Decimal('0.0000')
         self.txs = []
 
@@ -68,13 +72,11 @@ class Account:
         self.txs.append(tx)
 
     def _deposit(self, tx: Transaction) -> None:
-        self.available_funds += tx.tx_amount
         self.total_funds += tx.tx_amount
 
     def _withdrawal(self, tx: Transaction) -> None:
         if self.available_funds < tx.tx_amount:
             raise InsufficientAvailableFunds(self, tx)
-        self.available_funds -= tx.tx_amount
         self.total_funds -= tx.tx_amount
 
     def __str__(self):
