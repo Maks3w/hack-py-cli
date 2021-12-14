@@ -10,8 +10,8 @@ Feature: Disputes livecycle
   Scenario: Resolve an open dispute
      Given an account
       And the account have deposited 10.0
-      And a dispute is created
-      When the dispute is resolved
+      When a dispute is created
+      And the dispute is resolved
       Then the account should have available funds of 10.0
       And the account should have total funds of 10.0
 
@@ -29,11 +29,20 @@ Feature: Disputes livecycle
       Then the account should have available funds of 10.0
       And the account should have total funds of 10.0
 
+  Scenario: Open dispute on previous resolved dispute
+     Given an account
+      And the account have deposited 10.0
+      When a dispute is created
+      And the dispute is resolved
+      And a dispute is created
+      Then the account should have available funds of 0.0
+      And the account should have total funds of 10.0
+
   Scenario: Chargeback funds on dispute
      Given an account
       And the account have deposited 10.0
-      And a dispute is created
-      When the chargeback is created
+      When a dispute is created
+      And the chargeback is created
       Then the account should have available funds of 0.0
       And the account should have total funds of 0.0
       And the account should be locked

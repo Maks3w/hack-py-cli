@@ -29,10 +29,9 @@ def step_impl(context, amount: Decimal):
         context.exception = e
 
 
-@step("a dispute is created")
 @when("a dispute is created")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_dispute(context.account.account_id, context.account.txs[0].tx_id))
+    context.account.tx_add(Transaction.new_dispute(context.account.account_id, next(iter(context.account.txs))))
 
 
 @when("a dispute is resolved")
@@ -42,7 +41,7 @@ def step_impl(context):
 
 @when("the dispute is resolved")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_resolve_dispute(context.account.account_id, context.account.txs[0].tx_id))
+    context.account.tx_add(Transaction.new_resolve_dispute(context.account.account_id, next(iter(context.account.txs))))
 
 
 @when("a chargeback is created")
@@ -52,7 +51,7 @@ def step_impl(context):
 
 @when("the chargeback is created")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_chargeback(context.account.account_id, context.account.txs[0].tx_id))
+    context.account.tx_add(Transaction.new_chargeback(context.account.account_id, next(iter(context.account.txs))))
 
 
 @then("the account should have available funds of {available_funds:F}")

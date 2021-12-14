@@ -82,6 +82,9 @@ class Account:
     held_funds: Decimal
     total_funds: Decimal
     locked: bool
+    txs: dict[int, Decimal]
+    dispute_transactions_id: set[int]
+
 
     @property
     def available_funds(self) -> Decimal:
@@ -93,14 +96,20 @@ class Account:
         self.held_funds = Decimal('0.0000')
         self.total_funds = Decimal('0.0000')
         self.locked = False
-        self.txs = []
+        # txs contains a list of deposits/withdrawals for future use in case of disputes
+        # txs contains tx_id as index and tx_amount as value (memory savings)
+        self.txs = {}
+        # Only contains the tx_id of the dispute transactions
+        self.dispute_transactions_id = set()
 
     def tx_add(self, tx: AbstractTransaction) -> None:
         match tx.tx_type:
             case Transaction.TYPE_DEPOSIT:
                 self._deposit(tx)
+                self.txs[tx.tx_id] = tx.tx_amount
             case Transaction.TYPE_WITHDRAWAL:
                 self._withdrawal(tx)
+                self.txs[tx.tx_id] = tx.tx_amount
             case Transaction.TYPE_DISPUTE:
                 self._dispute(tx)
             case Transaction.TYPE_RESOLVE_DISPUTE:
@@ -109,8 +118,6 @@ class Account:
                 self._chargeback(tx)
             case _:
                 raise NotImplementedError(f'Unknown transaction type: {tx.tx_type}')
-
-        self.txs.append(tx)
 
     def _deposit(self, tx: Transaction) -> None:
         self.total_funds += tx.tx_amount
@@ -121,15 +128,32 @@ class Account:
         self.total_funds -= tx.tx_amount
 
     def _dispute(self, tx: DisputeTransaction) -> None:
-        self.held_funds += 0
+        if not self._dispute_can_be_opened(tx):
+            return None
+        self.dispute_transactions_id.add(tx.dispute_tx_id)
+        amount = self.txs.get(tx.dispute_tx_id)
+        self.held_funds += amount
 
     def _resolve_dispute(self, tx: DisputeTransaction) -> None:
-        self.held_funds -= 0
+        if not self._dispute_can_be_completed(tx):
+            return None
+        self.dispute_transactions_id.remove(tx.dispute_tx_id)
+        amount = self.txs.get(tx.dispute_tx_id)
+        self.held_funds -= amount
 
     def _chargeback(self, tx: DisputeTransaction) -> None:
+        if not self._dispute_can_be_completed(tx):
+            return None
         self.locked = True
-        self.held_funds -= 0
-        self.total_funds -= 0
+        amount = self.txs.get(tx.dispute_tx_id)
+        self.held_funds -= amount
+        self.total_funds -= amount
+
+    def _dispute_can_be_opened(self, tx: DisputeTransaction) -> bool:
+        return tx.dispute_tx_id in self.txs and tx.dispute_tx_id not in self.dispute_transactions_id
+
+    def _dispute_can_be_completed(self, tx: DisputeTransaction) -> bool:
+        return tx.dispute_tx_id in self.dispute_transactions_id
 
     def __str__(self):
         return f'Account({self.account_id}, {self.total_funds})'
