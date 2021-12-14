@@ -29,12 +29,12 @@ def step_impl(context, amount: Decimal):
         context.exception = e
 
 
-@then("the available funds should be {available_funds:F}")
+@then("the account should have available funds of {available_funds:F}")
 def step_impl(context, available_funds: Decimal):
     assert context.account.available_funds == available_funds
 
 
-@then("the total funds should be {total_funds:F}")
+@then("the account should have total funds of {total_funds:F}")
 def step_impl(context, total_funds: Decimal):
     assert context.account.total_funds == total_funds
 
