@@ -15,7 +15,7 @@ def step_impl(context):
 def step_impl(context, amount: Decimal):
     try:
         context.tx_index += 1
-        context.account.tx_add(Transaction.new_deposit(context.account.account_id, context.tx_index, amount))
+        context.account.tx_apply(Transaction.new_deposit(context.account.account_id, context.tx_index, amount))
     except InvalidTransactionException as e:
         context.exception = e
 
@@ -24,34 +24,34 @@ def step_impl(context, amount: Decimal):
 def step_impl(context, amount: Decimal):
     try:
         context.tx_index += 1
-        context.account.tx_add(Transaction.new_withdrawal(context.account.account_id, context.tx_index, amount))
+        context.account.tx_apply(Transaction.new_withdrawal(context.account.account_id, context.tx_index, amount))
     except InvalidTransactionException as e:
         context.exception = e
 
 
 @when("a dispute is created")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_dispute(context.account.account_id, next(iter(context.account.txs))))
+    context.account.tx_apply(Transaction.new_dispute(context.account.account_id, next(iter(context.account.txs))))
 
 
 @when("a dispute is resolved")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_resolve_dispute(context.account.account_id, context.tx_index + 100))
+    context.account.tx_apply(Transaction.new_resolve_dispute(context.account.account_id, context.tx_index + 100))
 
 
 @when("the dispute is resolved")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_resolve_dispute(context.account.account_id, next(iter(context.account.txs))))
+    context.account.tx_apply(Transaction.new_resolve_dispute(context.account.account_id, next(iter(context.account.txs))))
 
 
 @when("a chargeback is created")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_chargeback(context.account.account_id, context.tx_index + 100))
+    context.account.tx_apply(Transaction.new_chargeback(context.account.account_id, context.tx_index + 100))
 
 
 @when("the chargeback is created")
 def step_impl(context):
-    context.account.tx_add(Transaction.new_chargeback(context.account.account_id, next(iter(context.account.txs))))
+    context.account.tx_apply(Transaction.new_chargeback(context.account.account_id, next(iter(context.account.txs))))
 
 
 @then("the account should have available funds of {available_funds:F}")

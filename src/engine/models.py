@@ -102,7 +102,7 @@ class Account:
         # Only contains the tx_id of the dispute transactions
         self.dispute_transactions_id = set()
 
-    def tx_add(self, tx: AbstractTransaction) -> None:
+    def tx_apply(self, tx: AbstractTransaction) -> None:
         match tx.tx_type:
             case Transaction.TYPE_DEPOSIT:
                 self._deposit(tx)
