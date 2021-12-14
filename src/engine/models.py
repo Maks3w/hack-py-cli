@@ -81,6 +81,7 @@ class Account:
     account_id: int
     held_funds: Decimal
     total_funds: Decimal
+    locked: bool
 
     @property
     def available_funds(self) -> Decimal:
@@ -91,6 +92,7 @@ class Account:
         self.account_id = account_id
         self.held_funds = Decimal('0.0000')
         self.total_funds = Decimal('0.0000')
+        self.locked = False
         self.txs = []
 
     def tx_add(self, tx: AbstractTransaction) -> None:
@@ -125,6 +127,7 @@ class Account:
         self.held_funds -= 0
 
     def _chargeback(self, tx: DisputeTransaction) -> None:
+        self.locked = True
         self.held_funds -= 0
         self.total_funds -= 0
 

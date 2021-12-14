@@ -29,6 +29,32 @@ def step_impl(context, amount: Decimal):
         context.exception = e
 
 
+@step("a dispute is created")
+@when("a dispute is created")
+def step_impl(context):
+    context.account.tx_add(Transaction.new_dispute(context.account.account_id, context.account.txs[0].tx_id))
+
+
+@when("a dispute is resolved")
+def step_impl(context):
+    context.account.tx_add(Transaction.new_resolve_dispute(context.account.account_id, context.tx_index + 100))
+
+
+@when("the dispute is resolved")
+def step_impl(context):
+    context.account.tx_add(Transaction.new_resolve_dispute(context.account.account_id, context.account.txs[0].tx_id))
+
+
+@when("a chargeback is created")
+def step_impl(context):
+    context.account.tx_add(Transaction.new_chargeback(context.account.account_id, context.tx_index + 100))
+
+
+@when("the chargeback is created")
+def step_impl(context):
+    context.account.tx_add(Transaction.new_chargeback(context.account.account_id, context.account.txs[0].tx_id))
+
+
 @then("the account should have available funds of {available_funds:F}")
 def step_impl(context, available_funds: Decimal):
     assert context.account.available_funds == available_funds
@@ -48,3 +74,13 @@ def step_impl(context, total_funds: Decimal):
 def step_impl(context, message: str):
     assert context.exception is not None, "No error message was raised"
     assert str(context.exception) == message
+
+
+@step('the account should be locked')
+def step_impl(context):
+    assert context.account.locked is True
+
+
+@step('the account should not be locked')
+def step_impl(context):
+    assert context.account.locked is False
