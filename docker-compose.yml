@@ -1,0 +1,17 @@
+version: "3.7"
+
+x-app-common:
+  &app-common
+  build:
+    context: ./
+    dockerfile: docker/Dockerfile
+    args:
+      PIPENV_ARGS: "--dev"
+  env_file:
+    - .env.sample
+  volumes:
+    - "./src/:/project/src/"
+
+services:
+  payment_engine:
+    <<: *app-common
