@@ -2,6 +2,12 @@ from decimal import Decimal
 
 
 class Transaction:
+    @staticmethod
+    def assert_valid_tx_id(tx_id: int) -> None:
+        # Assert number range match with Rust u32 [0, 2^32)
+        if tx_id < 1 or tx_id > 4294967295:
+            raise InvalidTransactionException(f'Invalid tx_id: {tx_id}')
+
     @classmethod
     def new_deposit(cls, account_id: int, tx_id: int, tx_amount: Decimal) -> 'Transaction':
         return cls(account_id, tx_id, Transaction.TYPE_DEPOSIT, tx_amount)
@@ -18,6 +24,8 @@ class Transaction:
     tx_amount: Decimal
 
     def __init__(self, account_id: int, tx_id: int, tx_type: str, tx_amount: Decimal):
+        Account.assert_valid_account_id(account_id)
+        Transaction.assert_valid_tx_id(tx_id)
         self.client_id = account_id
         self.tx_id = tx_id
         self.tx_type = tx_type
@@ -31,11 +39,18 @@ class Transaction:
 
 
 class Account:
+    @staticmethod
+    def assert_valid_account_id(account_id: int) -> None:
+        # Assert number range match with Rust u16 [0, 2^16)
+        if account_id < 1 or account_id > 65535:
+            raise ValueError(f'Invalid account_id: {account_id}')
+
     account_id: int
     available_funds: Decimal
     total_funds: Decimal
 
     def __init__(self, account_id: int):
+        Account.assert_valid_account_id(account_id)
         self.account_id = account_id
         self.available_funds = Decimal('0.0000')
         self.total_funds = Decimal('0.0000')

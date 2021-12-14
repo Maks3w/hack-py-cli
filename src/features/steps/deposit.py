@@ -13,12 +13,17 @@ def step_impl(context, available_funds: Decimal):
 
 @when("a deposit of {amount:F} is made")
 def step_impl(context, amount: Decimal):
-    context.account.tx_add(Transaction.new_deposit(context.account.account_id, context.tx_index, amount))
+    try:
+        context.tx_index += 1
+        context.account.tx_add(Transaction.new_deposit(context.account.account_id, context.tx_index, amount))
+    except InvalidTransactionException as e:
+        context.exception = e
 
 
 @when("a withdraw of {amount:F} is made")
 def step_impl(context, amount: Decimal):
     try:
+        context.tx_index += 1
         context.account.tx_add(Transaction.new_withdrawal(context.account.account_id, context.tx_index, amount))
     except InvalidTransactionException as e:
         context.exception = e
