@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from behave import *
 
-from engine.models import Account, Transaction
+from engine.models import Account, Transaction, InvalidTransactionException
 
 
 @given("an account with available funds of {available_funds:F}")
@@ -16,6 +16,14 @@ def step_impl(context, amount: Decimal):
     context.account.tx_add(Transaction.new_deposit(context.account.account_id, context.tx_index, amount))
 
 
+@when("a withdraw of {amount:F} is made")
+def step_impl(context, amount: Decimal):
+    try:
+        context.account.tx_add(Transaction.new_withdrawal(context.account.account_id, context.tx_index, amount))
+    except InvalidTransactionException as e:
+        context.exception = e
+
+
 @then("the available funds should be {available_funds:F}")
 def step_impl(context, available_funds: Decimal):
     assert context.account.available_funds == available_funds
@@ -24,3 +32,9 @@ def step_impl(context, available_funds: Decimal):
 @then("the total funds should be {total_funds:F}")
 def step_impl(context, total_funds: Decimal):
     assert context.account.total_funds == total_funds
+
+
+@step('a message should be displayed saying "{message}"')
+def step_impl(context, message: str):
+    assert context.exception is not None, "No error message was raised"
+    assert str(context.exception) == message

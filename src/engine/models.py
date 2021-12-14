@@ -6,7 +6,12 @@ class Transaction:
     def new_deposit(cls, account_id: int, tx_id: int, tx_amount: Decimal) -> 'Transaction':
         return cls(account_id, tx_id, Transaction.TYPE_DEPOSIT, tx_amount)
 
+    @classmethod
+    def new_withdrawal(cls, account_id: int, tx_id: int, tx_amount: Decimal) -> 'Transaction':
+        return cls(account_id, tx_id, Transaction.TYPE_WITHDRAWAL, tx_amount)
+
     TYPE_DEPOSIT: str = 'deposit'
+    TYPE_WITHDRAWAL: str = 'withdrawal'
 
     tx_id: int
     tx_type: str
@@ -40,6 +45,8 @@ class Account:
         match tx.tx_type:
             case Transaction.TYPE_DEPOSIT:
                 self._deposit(tx)
+            case Transaction.TYPE_WITHDRAWAL:
+                self._withdrawal(tx)
             case _:
                 raise NotImplementedError(f'Unknown transaction type: {tx.tx_type}')
 
@@ -49,8 +56,27 @@ class Account:
         self.available_funds += tx.tx_amount
         self.total_funds += tx.tx_amount
 
+    def _withdrawal(self, tx: Transaction) -> None:
+        if self.available_funds < tx.tx_amount:
+            raise InsufficientAvailableFunds(self, tx)
+        self.available_funds -= tx.tx_amount
+        self.total_funds -= tx.tx_amount
+
     def __str__(self):
         return f'Account({self.account_id}, {self.total_funds})'
 
     def __repr__(self):
         return self.__str__()
+
+
+class InvalidTransactionException(ValueError):
+    pass
+
+
+class InsufficientAvailableFunds(InvalidTransactionException):
+    def __init__(self, account: Account, tx: Transaction):
+        self.account = account
+        self.tx = tx
+
+    def __str__(self):
+        return f"Insufficient available funds"
