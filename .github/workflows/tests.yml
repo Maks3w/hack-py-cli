@@ -41,3 +41,7 @@ jobs:
         working-directory: ./src
         run: |
           pipenv run behave
+      - name: Unit tests
+        working-directory: ./src
+        run: |
+          pipenv run pytest
