@@ -1,0 +1,43 @@
+name: Run project tests
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+    tags:
+      - 'v*'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - id: python_setup
+        uses: actions/setup-python@f38219332975fe8f9c04cca981d674bf22aea1d3 # v2.3.1
+        with:
+          python-version: '3.10.1'
+          architecture: 'x64'
+      - id: python_dependencies
+        run: |
+          pip install pipenv==2021.11.23
+      - id: pipenv_cache
+        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # v.2.1.7
+        with:
+          path: src/.venv
+          key: ${{ runner.os }}-${{ steps.python_setup.python-version }}-pipenv-${{ hashFiles('src/Pipfile.lock') }}
+          restore-keys: |
+            - ${{ runner.os }}-${{ steps.python_setup.python-version }}-pipenv
+            - ${{ runner.os }}
+      - id: pipenv_install
+        working-directory: ./src
+        if: steps.pipenv_cache.outputs.cache-hit != 'true'
+        env:
+          PIPENV_VENV_IN_PROJECT: 1
+        run: |
+          pipenv install --dev
+      - name: BDD tests
+        working-directory: ./src
+        run: |
+          pipenv run behave
