@@ -5,12 +5,12 @@ from behave import *
 from engine.models import Account, Transaction, InvalidTransactionException
 
 
-@given("an account with available funds of {available_funds:F}")
-def step_impl(context, available_funds: Decimal):
+@given("an account")
+def step_impl(context):
     context.account = Account(1)
-    context.account.tx_add(Transaction.new_deposit(context.account.account_id, context.tx_index, available_funds))
 
 
+@given("the account have deposited {amount:F}")
 @when("a deposit of {amount:F} is made")
 def step_impl(context, amount: Decimal):
     try:
