@@ -58,7 +58,7 @@ class Transaction(AbstractTransaction):
         self.tx_amount = tx_amount
 
     def __str__(self):
-        return f"Transaction({self.account_id} {self.tx_id} {self.tx_type} {self.tx_amount})"
+        return f"Transaction(account_id={self.account_id}, tx_id={self.tx_id}, tx_type={self.tx_type}, tx_amount={self.tx_amount})"
 
 
 class DisputeTransaction(AbstractTransaction):
@@ -68,7 +68,7 @@ class DisputeTransaction(AbstractTransaction):
         self.dispute_tx_id = dispute_tx_id
 
     def __str__(self):
-        return f"Dispute({self.account_id} {self.tx_type} {self.dispute_tx_id})"
+        return f"Dispute(account_id={self.account_id}, tx_type={self.tx_type}, dispute_tx_id={self.dispute_tx_id})"
 
 
 class Account:
@@ -101,6 +101,8 @@ class Account:
         # Only contains the tx_id of the dispute transactions
         self.dispute_transactions_id = set()
 
+    # :raises:
+    #   InvalidTransactionException if the transaction is not valid for current account state
     def tx_apply(self, tx: AbstractTransaction) -> None:
         match tx.tx_type:
             case Transaction.TYPE_DEPOSIT:
@@ -155,7 +157,7 @@ class Account:
         return tx.dispute_tx_id in self.dispute_transactions_id
 
     def __str__(self):
-        return f'Account({self.account_id}, {self.total_funds})'
+        return f'Account(account_id={self.account_id}, total_funds={self.total_funds}, held_funds={self.held_funds}, locked={self.locked})'
 
     def __repr__(self):
         return self.__str__()

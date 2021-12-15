@@ -1,4 +1,5 @@
 from decimal import Decimal
+from pathlib import Path
 
 from engine.file_manager import read_transactions_file
 from engine.factories import TransactionFactory
@@ -6,8 +7,11 @@ from engine.models import Transaction, DisputeTransaction
 
 
 def test_read_transactions_file():
+    csv_file_path = 'asset/transactions_demo.csv'
+    real_csv_path = str((Path(__file__).parent / csv_file_path).resolve())
+
     txs = []
-    for tx_type, account_id, tx_id, tx_amount in read_transactions_file('asset/transactions_demo.csv'):
+    for tx_type, account_id, tx_id, tx_amount in read_transactions_file(real_csv_path):
         txs.append(TransactionFactory.create(tx_type, account_id, tx_id, tx_amount))
 
     assert len(txs) == 8
