@@ -85,7 +85,6 @@ class Account:
     txs: dict[int, Decimal]
     dispute_transactions_id: set[int]
 
-
     @property
     def available_funds(self) -> Decimal:
         return self.total_funds - self.held_funds
