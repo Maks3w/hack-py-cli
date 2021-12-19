@@ -23,7 +23,7 @@ jobs:
         run: |
           pip install pipenv==2021.11.23
       - id: pipenv_cache
-        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # v.2.1.7
+        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # v2.1.7
         with:
           path: src/.venv
           key: ${{ runner.os }}-${{ steps.python_setup.python-version }}-pipenv-${{ hashFiles('src/Pipfile.lock') }}
@@ -31,17 +31,30 @@ jobs:
             - ${{ runner.os }}-${{ steps.python_setup.python-version }}-pipenv
             - ${{ runner.os }}
       - id: pipenv_install
-        working-directory: ./src
         if: steps.pipenv_cache.outputs.cache-hit != 'true'
+        working-directory: ./src
         env:
           PIPENV_VENV_IN_PROJECT: 1
         run: |
           pipenv install --dev
       - name: BDD tests
+        if: ${{ always() }}
         working-directory: ./src
         run: |
-          pipenv run behave
+          pipenv run coverage run --append --module behave
       - name: Unit tests
+        if: ${{ always() }}
         working-directory: ./src
         run: |
-          pipenv run pytest
+          pipenv run coverage run --append --module pytest
+      - name: Coverage report
+        if: ${{ always() }}
+        working-directory: ./src
+        run: |
+          pipenv run coverage report
+          pipenv run coverage xml
+      - uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
+        if: ${{ always() }}
+        with:
+          files: ./src/coverage.xml # codecov needs the file in XML format
+          fail_ci_if_error: true # Fail if CI fails as is important review the delta coverage report
