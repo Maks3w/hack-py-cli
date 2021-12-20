@@ -1,0 +1,112 @@
+<testsuite name="dispute.Disputes livecycle" tests="8" errors="0" failures="0" skipped="0" time="0.015636" timestamp="2021-12-20T10:52:26.980349" hostname="Fenix-W10"><testcase classname="dispute.Disputes livecycle" name="Hold available funds on dispute" status="passed" time="0.0"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Hold available funds on dispute
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When a dispute is created ... passed in 0.000s
+    Then the account should have available funds of 0.0 ... passed in 0.000s
+    And the account should have total funds of 10.0 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="dispute.Disputes livecycle" name="Resolve an open dispute" status="passed" time="0.0"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Resolve an open dispute
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When a dispute is created ... passed in 0.000s
+    And the dispute is resolved ... passed in 0.000s
+    Then the account should have available funds of 10.0 ... passed in 0.000s
+    And the account should have total funds of 10.0 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="dispute.Disputes livecycle" name="Resolve an unknown dispute id does nothing" status="passed" time="0.0"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Resolve an unknown dispute id does nothing
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When a dispute is resolved ... passed in 0.000s
+    Then the account should have available funds of 10.0 ... passed in 0.000s
+    And the account should have total funds of 10.0 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="dispute.Disputes livecycle" name="Resolve on transaction without dispute does nothing" status="passed" time="0.0"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Resolve on transaction without dispute does nothing
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When the dispute is resolved ... passed in 0.000s
+    Then the account should have available funds of 10.0 ... passed in 0.000s
+    And the account should have total funds of 10.0 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="dispute.Disputes livecycle" name="Open dispute on previous resolved dispute" status="passed" time="0.0"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Open dispute on previous resolved dispute
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When a dispute is created ... passed in 0.000s
+    And the dispute is resolved ... passed in 0.000s
+    And a dispute is created ... passed in 0.000s
+    Then the account should have available funds of 0.0 ... passed in 0.000s
+    And the account should have total funds of 10.0 ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="dispute.Disputes livecycle" name="Chargeback funds on dispute" status="passed" time="0.015636"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Chargeback funds on dispute
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When a dispute is created ... passed in 0.000s
+    And the chargeback is created ... passed in 0.000s
+    Then the account should have available funds of 0.0 ... passed in 0.000s
+    And the account should have total funds of 0.0 ... passed in 0.016s
+    And the account should be locked ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="dispute.Disputes livecycle" name="Chargeback an unknown dispute id does nothing" status="passed" time="0.0"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Chargeback an unknown dispute id does nothing
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When a chargeback is created ... passed in 0.000s
+    Then the account should have available funds of 10.0 ... passed in 0.000s
+    And the account should have total funds of 10.0 ... passed in 0.000s
+    And the account should not be locked ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="dispute.Disputes livecycle" name="Chargeback on transaction without dispute does nothing" status="passed" time="0.0"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Chargeback on transaction without dispute does nothing
+    Given an account ... passed in 0.000s
+    And the account have deposited 10.0 ... passed in 0.000s
+    When the chargeback is created ... passed in 0.000s
+    Then the account should have available funds of 10.0 ... passed in 0.000s
+    And the account should have total funds of 10.0 ... passed in 0.000s
+    And the account should not be locked ... passed in 0.000s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>
