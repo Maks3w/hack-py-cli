@@ -62,4 +62,4 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@dc4b2f22e07d0995dffe65daf902598f695e8827 # v1.25
         if: always()
         with:
-          files: test-reports/**/*.xml
+          files: src/test-reports/**/*.xml
