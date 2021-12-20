@@ -1,0 +1,5 @@
+codecov:
+  branch: main
+comment: false
+fixes:
+  - "::src/"
