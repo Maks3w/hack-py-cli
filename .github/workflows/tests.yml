@@ -48,7 +48,7 @@ jobs:
         if: ${{ always() }}
         working-directory: ./src
         run: |
-          pipenv run coverage run --append --module pytest
+          pipenv run coverage run --append --module pytest --junit-xml=test-reports/pytest/junit.xml
       - name: Coverage report
         if: ${{ always() }}
         working-directory: ./src
